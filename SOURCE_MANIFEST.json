@@ -3,8 +3,8 @@
   "formatVersion": 1,
   "license": "MIT for original project code; third-party and asset notices retained",
   "scope": "Source, documentation, reviewed header and public asset/configuration manifests. Game and runtime packs are separate release assets.",
-  "fileCount": 374,
-  "totalBytes": 7789506,
+  "fileCount": 377,
+  "totalBytes": 7804993,
   "files": [
     {
       "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
@@ -53,13 +53,13 @@
     },
     {
       "path": "README.md",
-      "bytes": 6807,
-      "sha256": "ba116f492d48470e454da7ee0991e9d5aebb022570ef6696847bd57e203ca474"
+      "bytes": 6859,
+      "sha256": "59dd1066e96f76b3cacf1db4b5380f816e2520ae7c140a0caa0153013478c6f7"
     },
     {
       "path": "THIRD_PARTY.md",
-      "bytes": 995,
-      "sha256": "899e0eb8f359d4d4318570c61f547df35dc76ce729e70756c7c724f237a2aca2"
+      "bytes": 1139,
+      "sha256": "379406473b615b2c15c69572320c7604f3d5cea463aeb0a1f16282bc3df6b3b1"
     },
     {
       "path": "VERSION",
@@ -93,8 +93,8 @@
     },
     {
       "path": "docs/BUILDING.md",
-      "bytes": 7569,
-      "sha256": "52ceda7db2445cc49270d8c1e84d17b1b5877440914fca10fe1765ecb91350e0"
+      "bytes": 8333,
+      "sha256": "edba9e2422ed0b4b68ec34312f2931ed243b35451f46df439eb976fc2d23b337"
     },
     {
       "path": "docs/COMPLETE_RELEASE.md",
@@ -105,6 +105,11 @@
       "path": "docs/CONTROLS.md",
       "bytes": 737,
       "sha256": "03e2146d5b3a8f407e0addae9544e0e0865ffa61b67178583dbfa9ebe92750e1"
+    },
+    {
+      "path": "docs/FEATURES.md",
+      "bytes": 4462,
+      "sha256": "ee172f989724c63ae22d712aa721c42181fdfd598bbc1b37e206c0714b6c156e"
     },
     {
       "path": "docs/KNOWN_ISSUES.md",
@@ -123,8 +128,8 @@
     },
     {
       "path": "docs/VALIDATION.md",
-      "bytes": 9554,
-      "sha256": "7ea8de761b749f91cdaf53896a43275a45e07803f928aa073477ec9b488e941b"
+      "bytes": 10331,
+      "sha256": "0699ebd6ae2121b5a8631c903c8b7b7062cc012342b6df8613b2c0848f68d49f"
     },
     {
       "path": "docs/assets/README.md",
@@ -1802,6 +1807,11 @@
       "sha256": "d02b0450a82f957c6ae2b703cb3c56c54c76459a28fa56e2cedab460c3b80222"
     },
     {
+      "path": "tools/import_censhine_pack.py",
+      "bytes": 7279,
+      "sha256": "b94463bd589b79e49a8253c58a198fb5f8abf6e9299c00dabf84b73a50a5ee04"
+    },
+    {
       "path": "tools/import_texmod_pack.py",
       "bytes": 6246,
       "sha256": "ed3c4b34d32d9c663a22c37e1125048345394623224f36eeb19a2892ef328d31"
@@ -1823,13 +1833,18 @@
     },
     {
       "path": "tools/run_source_checks.py",
-      "bytes": 20892,
-      "sha256": "cd82899e673938562ef9b357d8160f0f5ad3d9cabb9c6d967bbea832cae9f6a7"
+      "bytes": 20958,
+      "sha256": "bdab60be1a72d13fe5824398c7ba35c93a0af229188aa5053a3cea11604f6bb4"
     },
     {
       "path": "tools/setup_halo.py",
       "bytes": 30857,
       "sha256": "564e1add4c9e0d17587b82cc0e4de751a8657d986fbb3389e0d65e82b1700afc"
+    },
+    {
+      "path": "tools/test_censhine_import.py",
+      "bytes": 1943,
+      "sha256": "b0c332056ff0e495702116a4467d2d9a58fdebe9e5ecc67c07a76edfaa327be3"
     },
     {
       "path": "tools/test_engine_vision_report_summary.py",

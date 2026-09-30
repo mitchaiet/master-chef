@@ -1,5 +1,19 @@
 # Source-release validation
 
+## Source completeness follow-up
+
+The comparison with the development tree covered 271 public native files.
+Of those, 260 are byte-identical; the other 11 have reviewed
+anonymization, source portability, notices, signing or resource-packaging
+differences. No missing runtime fix was found in this comparison.
+
+The CEnshine shader adapter already present in the release's `CEnshineSources.zip` is
+now also available as `tools/import_censhine_pack.py`, with four synthetic
+regressions registered in the source suite. Those four checks, the 24 setup
+regressions and nine visual-asset/content checks passed. Source hygiene and
+secret scans passed. No runtime behavior, release binary or existing ZIP
+checksum changed during this follow-up; it is not a new headset acceptance run.
+
 ## 1.0.3 complete packaging update
 
 - Fresh public-source engine generation completed with 8,336 functions and

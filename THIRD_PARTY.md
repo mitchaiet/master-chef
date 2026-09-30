@@ -12,7 +12,9 @@ notices as `native/EngineVision/Resources/ThirdPartyNotices.txt`. Python
 packages in `requirements-development.txt` are installed separately and
 retain their own licenses. They are not vendored in the source archive.
 
-Game files, HD texture packs, shader mods, and their artwork are not included.
+Game files, HD texture packs and shader binaries are not stored in the Git
+source tree. Separate Complete and visual-assets releases contain the
+published assets and their notices; see [ASSET_NOTICES.md](docs/ASSET_NOTICES.md).
 No project license grants rights to those materials. If you add optional
-assets, include the corresponding notices and source required by their
-licenses in your own local/distribution process.
+assets, retain the corresponding notices and source required by their
+licenses in your local/distribution process.

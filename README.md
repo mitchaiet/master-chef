@@ -12,6 +12,7 @@ The project translates the supported Halo PC executable into ARM64 code.
 · [Installation guide](docs/COMPLETE_RELEASE.md)
 · [Set up with an agent](docs/AGENT_SETUP.md)
 · [Known issues](docs/KNOWN_ISSUES.md)
+· [Feature and package coverage](docs/FEATURES.md)
 
 **Playable, experimental release.** Combat frame-rate drops, panorama seams,
 texture glitches and audio interruptions remain under investigation. This is

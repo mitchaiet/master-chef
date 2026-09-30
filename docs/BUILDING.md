@@ -162,8 +162,24 @@ modify existing installations or saves.
 
 `tools/import_texmod_pack.py` and `tools/merge_hd_texture_pack.py` support
 locally supplied texture packs. Run each with `--help`. No texture or shader
-mods are bundled with this release; obtain permissions and retain the
-relevant licenses for any assets you add.
+pack binaries are stored in Git; the Complete and visual-assets release ZIPs
+carry the published packs. Obtain permissions and retain the relevant notices
+for any additional assets you use.
+
+`tools/import_censhine_pack.py` adapts the reviewed 13-program CEnshine 1.0.0
+subset to the retail PC shader interface. It takes a locally supplied,
+Composer-decoded retail `fx.bin`, the decoded CEnshine collection, and an output
+path. It does not download those inputs or include Composer:
+
+```sh
+python3 tools/import_censhine_pack.py /path/to/decoded/fx.bin \
+  /path/to/decoded/collection /path/to/output/ShaderMods.hvs
+python3 tools/test_censhine_import.py
+```
+
+This rebuild tool is optional: ordinary setup uses the already verified
+release packs. The adapter is also included in `CEnshineSources.zip`, along
+with the upstream source/license. See [feature coverage](FEATURES.md).
 
 `tools/probe_engine_menu_input.py` runs bounded desktop diagnostics with a
 cloned game directory. `tools/watch_engine_vision_telemetry.py` reads local
