@@ -441,8 +441,8 @@ static int dll_equal(const char *a, const char *b) {
 const HostShimEntry *host_shims_d3d9_build(void); const HostShimEntry *host_shims_dinput8_build(void); const HostShimEntry *host_shims_ddraw_build(void);
 static HostShim find_shim(const char *dll, const char *name) {
     static const HostShimEntry *d3d9_table, *dinput_table, *ddraw_table; if (!d3d9_table) { d3d9_table = host_shims_d3d9_build(); dinput_table = host_shims_dinput8_build(); ddraw_table = host_shims_ddraw_build(); }
-    const HostShimEntry *tables[] = { host_shims_kernel32, host_shims_misc, d3d9_table, dinput_table, ddraw_table };
-    for (size_t t = 0; t < 5; t++)
+    const HostShimEntry *tables[] = { host_shims_kernel32, host_shims_misc, host_shims_winsock, d3d9_table, dinput_table, ddraw_table };
+    for (size_t t = 0; t < sizeof tables / sizeof tables[0]; t++)
         for (const HostShimEntry *e = tables[t]; e->name; e++)
             if (dll_equal(e->dll, dll) && !strcmp(e->name, name)) return e->fn;
     return NULL;
@@ -656,6 +656,7 @@ int host_run(const char *exe, const char *root) {
     host_escape_ready = 0;
     host_log("stopped: %s", host_escape_reason);
     dump_cpu(cpu);
+    host_winsock_shutdown();
     host_dsound_shutdown();
     uint64_t audio_frames=0,audio_nonzero=0;float audio_peak=0;
     host_dsound_get_stats(&audio_frames,&audio_nonzero,&audio_peak);

@@ -19,6 +19,8 @@ typedef void (*HostShim)(EngineCPU *cpu);
 typedef struct { const char *dll, *name; HostShim fn; } HostShimEntry;
 extern const HostShimEntry host_shims_kernel32[];
 extern const HostShimEntry host_shims_misc[];
+extern const HostShimEntry host_shims_winsock[];
+void host_winsock_shutdown(void);
 
 /* Guest memory access. */
 extern uint8_t *engine_flat_base;

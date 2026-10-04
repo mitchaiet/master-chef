@@ -382,13 +382,6 @@ SHIM(GetFileVersionInfoA) { RET_STDCALL(0, 4); }
 SHIM(VerQueryValueA) { RET_STDCALL(0, 4); }
 SHIM(ShellExecuteA) { host_log("ShellExecuteA(%s)", ARG(2) ? GSTR(ARG(2)) : ""); RET_STDCALL(42, 6); }
 SHIM(InternetQueryOptionA) { RET_STDCALL(0, 4); }
-SHIM(WSAStartup) { uint32_t d = ARG(1); if (d) { memset(GPTR(d), 0, 400); S16(d, 0x0202); S16(d + 2, 0x0202); strcpy((char *)GPTR(d + 4), "WinSock 2.0"); } RET_STDCALL(0, 2); }
-SHIM(WSACleanup) { RET_STDCALL(0, 0); }
-SHIM(WSAGetLastError) { RET_STDCALL(10047, 0); }
-SHIM(socket) { RET_STDCALL(0xFFFFFFFFu, 3); }
-SHIM(gethostname) { uint32_t b = ARG(0); if (b) strcpy((char *)GPTR(b), "halo"); RET_STDCALL(0, 2); }
-SHIM(gethostbyname) { RET_STDCALL(0, 1); }
-SHIM(closesocket) { RET_STDCALL(0, 1); }
 SHIM(DirectSoundCreate8) { host_dsound_create8(cpu); }
 SHIM(DirectSoundCreate) { host_dsound_create(cpu); }
 SHIM(DirectSoundEnumerateA) { uint32_t cb = ARG(0), ctx = ARG(1); static uint32_t desc, mod; if (!desc) { desc = guest_strdup("Primary Sound Driver"); mod = guest_strdup(""); }
@@ -434,8 +427,6 @@ const HostShimEntry host_shims_misc[] = {
     { "WINMM.dll", "timeBeginPeriod", shim_timeBeginPeriod }, { "WINMM.dll", "timeEndPeriod", shim_timeEndPeriod },
     { "VERSION.dll", "GetFileVersionInfoSizeA", shim_GetFileVersionInfoSizeA }, { "VERSION.dll", "GetFileVersionInfoA", shim_GetFileVersionInfoA }, { "VERSION.dll", "VerQueryValueA", shim_VerQueryValueA },
     { "SHELL32.dll", "ShellExecuteA", shim_ShellExecuteA }, { "WININET.dll", "InternetQueryOptionA", shim_InternetQueryOptionA },
-    { "WSOCK32.dll", "#115", shim_WSAStartup }, { "WSOCK32.dll", "#116", shim_WSACleanup }, { "WSOCK32.dll", "#111", shim_WSAGetLastError }, { "WSOCK32.dll", "#23", shim_socket }, { "WSOCK32.dll", "#57", shim_gethostname }, { "WSOCK32.dll", "#52", shim_gethostbyname }, { "WSOCK32.dll", "#3", shim_closesocket },
-    { "WS2_32.dll", "#115", shim_WSAStartup }, { "WS2_32.dll", "#116", shim_WSACleanup }, { "WS2_32.dll", "#111", shim_WSAGetLastError }, { "WS2_32.dll", "#23", shim_socket }, { "WS2_32.dll", "#57", shim_gethostname }, { "WS2_32.dll", "#52", shim_gethostbyname }, { "WS2_32.dll", "#3", shim_closesocket },
     { "DSOUND.dll", "DirectSoundCreate8", shim_DirectSoundCreate8 }, { "DSOUND.dll", "DirectSoundCreate", shim_DirectSoundCreate }, { "DSOUND.dll", "#1", shim_DirectSoundCreate }, { "DSOUND.dll", "#11", shim_DirectSoundCreate8 },
     { "DSOUND.dll", "DirectSoundEnumerateA", shim_DirectSoundEnumerateA }, { "DSOUND.dll", "#2", shim_DirectSoundEnumerateA }, { "DSOUND.dll", "DirectSoundCaptureEnumerateA", shim_DirectSoundCaptureEnumerateA }, { "DSOUND.dll", "#9", shim_DirectSoundCaptureEnumerateA }, { "DSOUND.dll", "GetDeviceID", shim_DirectSoundGetDeviceID }, { "DSOUND.dll", "#14", shim_DirectSoundGetDeviceID },
     HOST_DSOUND_SHIM_ENTRIES,

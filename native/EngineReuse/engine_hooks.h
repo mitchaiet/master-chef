@@ -20,6 +20,7 @@
 #include <stdint.h>
 
 #define ENGINE_HOOK_ADDRESSES(X) \
+    X(0x00577240u) /* native app updates; do not launch the Windows patcher */ \
     X(0x004C6E80u) /* campaign unlock and input/control tick */ \
     X(0x00442550u) X(0x00544090u) X(0x00544120u) X(0x0048A1A0u) /* audio/HSC */ \
     X(0x004D6FC0u) X(0x00533850u) X(0x00533730u) /* model capture */ \

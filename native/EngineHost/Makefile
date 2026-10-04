@@ -10,7 +10,7 @@ CHUNK_OBJS := $(patsubst $(GEN)/%.c,$(OBJ)/%.o,$(CHUNKS))
 # Generated chunks include individual lifted functions. Track those inputs even
 # for cached objects created before dependency files were introduced.
 $(foreach chunk,$(CHUNKS),$(eval $(OBJ)/$(notdir $(chunk:.c=.o)): $(addprefix $(GEN)/,$(shell sed -n 's/^.*"\(sub_[^"]*\.c\)".*/\1/p' $(chunk)))))
-HOST_SRCS := host.c threading.c haptics.c halo_settings.c pointer.c shims_kernel32.c shims_misc.c d3d9.c texture_decode.c metalshader.c dinput8.c ddraw.c directsound.c directsound_mixer.c vorbis_shim.c resources.c overrides.c main.c
+HOST_SRCS := host.c threading.c haptics.c halo_settings.c pointer.c shims_kernel32.c shims_misc.c winsock.c d3d9.c texture_decode.c metalshader.c dinput8.c ddraw.c directsound.c directsound_mixer.c vorbis_shim.c resources.c overrides.c main.c
 HOST_OBJC := metalwin.m metalrenderer.m gamecontroller.m
 MOJO_DEFINES := -DSUPPORT_PROFILE_D3D=0 -DSUPPORT_PROFILE_BYTECODE=0 -DSUPPORT_PROFILE_HLSL=0 -DSUPPORT_PROFILE_GLSL120=0 -DSUPPORT_PROFILE_GLSLES=0 -DSUPPORT_PROFILE_GLSLES3=0 -DSUPPORT_PROFILE_GLSL=0 -DSUPPORT_PROFILE_ARB1=0 -DSUPPORT_PROFILE_ARB1_NV=0 -DSUPPORT_PROFILE_SPIRV=0 -DSUPPORT_PROFILE_GLSPIRV=0
 MOJO_OBJS := $(OBJ)/mojoshader.o $(OBJ)/mojoshader_common.o $(OBJ)/mojoshader_profile_common.o $(OBJ)/mojoshader_profile_metal.o
@@ -18,7 +18,7 @@ HOST_OBJS := $(patsubst %.c,$(OBJ)/%.o,$(HOST_SRCS)) $(patsubst %.m,$(OBJ)/%.o,$
 
 all: halo-host
 
-$(OBJ)/overrides.o: campaign_unlock.h visible_surfaces.h $(VISION)/native/EngineReuse/engine_flags.h
+$(OBJ)/overrides.o: campaign_unlock.h visible_surfaces.h multiplayer_update.h $(VISION)/native/EngineReuse/engine_flags.h
 $(OBJ)/pointer.o: pointer_step.inc
 $(OBJ)/d3d9.o: texture_mod_runtime.inc texture_mod_pack.h shader_mod_runtime.inc shader_mod_pack.h
 

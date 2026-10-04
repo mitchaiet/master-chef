@@ -86,7 +86,7 @@ def direct_xros_build(inventory: dict[str, object], clean: bool, configuration: 
               "-frounding-math", "-ffp-contract=off", "-DMOJOSHADER_NO_VERSION_INCLUDE=1", '-DSUPPORT_PROFILE_D3D=0', '-DSUPPORT_PROFILE_BYTECODE=0', '-DSUPPORT_PROFILE_HLSL=0', '-DSUPPORT_PROFILE_GLSL120=0', '-DSUPPORT_PROFILE_GLSLES=0', '-DSUPPORT_PROFILE_GLSLES3=0', '-DSUPPORT_PROFILE_GLSL=0', '-DSUPPORT_PROFILE_ARB1=0', '-DSUPPORT_PROFILE_ARB1_NV=0', '-DSUPPORT_PROFILE_SPIRV=0', '-DSUPPORT_PROFILE_GLSPIRV=0', "-I", str(REPO / "third_party/mojoshader"), "-O2" if configuration == "Release" else "-O0", *includes]
     host = REPO / "native" / "EngineHost"
     c_sources = [host / name for name in (
-        "host.c", "shims_kernel32.c", "shims_misc.c", "directsound.c", "directsound_mixer.c", "vorbis_shim.c", "d3d9.c", "texture_decode.c", "metalshader.c", "dinput8.c",
+        "host.c", "shims_kernel32.c", "shims_misc.c", "winsock.c", "directsound.c", "directsound_mixer.c", "vorbis_shim.c", "d3d9.c", "texture_decode.c", "metalshader.c", "dinput8.c",
         "ddraw.c", "resources.c", "overrides.c", "threading.c", "pointer.c", "haptics.c", "halo_settings.c",
     )]
     c_sources += [REPO / "third_party/mojoshader/mojoshader.c", REPO / "third_party/mojoshader/mojoshader_common.c", REPO / "third_party/mojoshader/profiles/mojoshader_profile_common.c", REPO / "third_party/mojoshader/profiles/mojoshader_profile_metal.c"]
@@ -181,15 +181,16 @@ def direct_xros_build(inventory: dict[str, object], clean: bool, configuration: 
         "CFBundleInfoDictionaryVersion": "6.0",
         "CFBundleName": "HaloVision",
         "CFBundlePackageType": "APPL",
-        "CFBundleShortVersionString": "1.0.3",
+        "CFBundleShortVersionString": "1.0.4",
         "CFBundleSupportedPlatforms": ["XROS"],
-        "CFBundleVersion": "103",
+        "CFBundleVersion": "104",
         "HaloBuildID": dt.datetime.now(dt.timezone.utc).isoformat(),
         "DTPlatformName": "xros",
         "GCSupportsControllerUserInteraction": True,
         "GCSupportedGameControllers": [{"ProfileName": "ExtendedGamepad"}],
         "GCRequiresControllerUserInteraction": {"visionOS": True},
         "MinimumOSVersion": "26.0",
+        "NSLocalNetworkUsageDescription": "Connect to Halo multiplayer servers and players on your local network.",
         "NSHandsTrackingUsageDescription": "A pinch selects the menu item you are looking at.",
         "NSWorldSensingUsageDescription": "Head tracking keeps the curved original-engine screen aligned with your chosen reclined pose; aiming remains on the controller.",
         "UIApplicationPreferredDefaultSceneSessionRole": "CPSceneSessionRoleImmersiveSpaceApplication",
