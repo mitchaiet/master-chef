@@ -26,12 +26,13 @@ registration and Apple signing are required.
 - Controller movement, aiming, menus, haptics, and reclined recentering.
 - Local save storage, bounded diagnostics, and optional local texture packs.
 - Hardware texture hashing and bounded reuse of static geometry.
-- Public Internet server browsing and joining in the **Build104 development
+- Public Internet server browsing and joining in the **Build105 development
   source**; [multiplayer setup and test status](docs/MULTIPLAYER.md).
 
 The multiplayer changes require a new source build. They are **not included in
-the v1.0.3 download** linked above. Build104 has passed a desktop public-server
-join, movement and firing test; Vision Pro gameplay verification is pending.
+the v1.0.3 download** linked above. Desktop public-server joining, movement and
+firing passed, and headset joining has been user-reported. Build105 fixes
+multiplayer Start-menu input and restores the app icon.
 
 The Complete bundle includes the unsigned **1.0.3 / build 103** app, game
 assets, all **1,068 installed texture replacements and 13 shader replacements**,
@@ -122,10 +123,14 @@ original engine report a skip until locally generated code is available.
 
 ## Status
 
-Build104 / 1.0.4 development adds native networking and removes the obsolete
-Windows updater dependency from the Internet menu. Desktop testing retrieved
-71 public servers and joined a Timberland game with movement and firing. A
-visionOS Release build compiled; headset multiplayer testing is still pending.
+Build105 / 1.0.5 development includes native Internet multiplayer, restores
+the layered app icon, and fixes controller and pointer input in multiplayer
+Start menus. Desktop testing retrieved 71 public servers and joined a
+Timberland game with movement and firing. The corrected menu also passed
+navigation, settings, pointer resume and Leave Game tests against a local
+dedicated server. Build104 headset startup was verified and joining was
+user-reported. Build105 is installed and its device-rendered icon is verified;
+headset menu acceptance and extended multiplayer qualification remain open.
 
 Build91 was installed and startup-verified on a Vision Pro. Build103 uses the
 same runtime fixes and adds complete resource packaging; it has been compiled

@@ -1,7 +1,8 @@
 # Feature and package coverage
 
-The Build104 development source adds networking to the Build91 runtime feature
-set. The published v1.0.3/build 103 bundle packages the earlier runtime with
+The Build105 development source adds networking, fixes multiplayer menu input
+and restores the app icon to the Build91 runtime feature set.
+The published v1.0.3/build 103 bundle packages the earlier runtime with
 the published assets and setup tools; it does not include multiplayer support.
 The table distinguishes included capabilities from completed gameplay
 qualification; it is not a claim that every mission or feature is bug-free.
@@ -11,7 +12,7 @@ qualification; it is not a claim that every mission or feature is bug-free.
 | Native game execution and Metal rendering | `native/EngineReuse`, `native/EngineHost`, generation/build tools | Fresh engine generation and unsigned Release build passed; generated game code is created locally. |
 | Immersive panorama, forward stereo and interface layer | `native/EngineHost/panorama*`, `native/EngineVision/Sources` | Build91 headset startup verified; peripheral panorama is not full stereo and seams remain known issues. |
 | Controller input, menus, recentering and haptics | Runtime source and [controls](CONTROLS.md) | Implemented; all controller/headset combinations have not been qualified. |
-| Public Internet multiplayer | Build104 source; [multiplayer guide](MULTIPLAYER.md) | Desktop browser retrieved 71 servers; public Timberland join, movement and firing passed. Vision Pro multiplayer, populated matches and hosting remain unqualified. Not in v1.0.3 downloads. |
+| Public Internet multiplayer | Build105 source; [multiplayer guide](MULTIPLAYER.md) | Desktop browser retrieved 71 servers; public Timberland join, movement and firing passed. Start-menu navigation, settings, pointer resume and Leave Game passed against a local server. Build104 headset joining is user-reported; populated matches and hosting remain unqualified. Not in v1.0.3 downloads. |
 | Audio mixing and interruption recovery | `directsound*`, `audio_session.inc` | Regression checks and an active headset audio queue verified; continuous audible playback remains an acceptance item. |
 | Runtime settings and performance options | Settings source and [`mods/runtime-settings.json`](../mods/runtime-settings.json) | The JSON records compiled defaults; it is not a separate settings loader. Per-user tracking/pose data is excluded. |
 | Local saves and asset import | `EngineAssets.swift`, `tools/setup_halo.py` | Save-preservation and setup regressions passed. Each recipient creates their own saves and private registration. |

@@ -66,6 +66,26 @@ def run_stream(command: list[str], log_path: Path, cwd: Path) -> int:
         return process.wait()
 
 
+def compile_app_icon(product: Path) -> dict[str, object]:
+    """Compile the visionOS layered icon and return actool's bundle metadata."""
+    partial = product.parent / "app-icon-info.plist"
+    partial.unlink(missing_ok=True)
+    # A stale catalog must not make an incomplete compile appear successful.
+    (product / "Assets.car").unlink(missing_ok=True)
+    subprocess.run([
+        "xcrun", "actool", str(APP / "Resources/AppIcons.xcassets"),
+        "--compile", str(product), "--platform", "xros",
+        "--minimum-deployment-target", "26.0", "--target-device", "vision",
+        "--app-icon", "AppIcon", "--output-partial-info-plist", str(partial),
+        "--warnings", "--errors",
+    ], check=True)
+    with partial.open("rb") as source:
+        info = plistlib.load(source)
+    if not (product / "Assets.car").is_file() or not info.get("CFBundleIcons", {}).get("CFBundlePrimaryIcon"):
+        raise RuntimeError("App icon compilation did not produce a catalog and primary-icon metadata")
+    return info
+
+
 def direct_xros_build(inventory: dict[str, object], clean: bool, configuration: str) -> tuple[int, Path | None]:
     """Build an unsigned device bundle without Xcode's separately installed platform runtime."""
     if clean:
@@ -74,6 +94,7 @@ def direct_xros_build(inventory: dict[str, object], clean: bool, configuration: 
     product = DIRECT / "HaloVision.app"
     objects.mkdir(parents=True, exist_ok=True)
     product.mkdir(parents=True, exist_ok=True)
+    icon_info = compile_app_icon(product)
     sdk = subprocess.check_output(["xcrun", "--sdk", "xros", "--show-sdk-path"], text=True).strip()
     target = "arm64-apple-xros26.0"
     includes = [
@@ -181,9 +202,9 @@ def direct_xros_build(inventory: dict[str, object], clean: bool, configuration: 
         "CFBundleInfoDictionaryVersion": "6.0",
         "CFBundleName": "HaloVision",
         "CFBundlePackageType": "APPL",
-        "CFBundleShortVersionString": "1.0.4",
+        "CFBundleShortVersionString": "1.0.5",
         "CFBundleSupportedPlatforms": ["XROS"],
-        "CFBundleVersion": "104",
+        "CFBundleVersion": "105",
         "HaloBuildID": dt.datetime.now(dt.timezone.utc).isoformat(),
         "DTPlatformName": "xros",
         "GCSupportsControllerUserInteraction": True,
@@ -204,6 +225,7 @@ def direct_xros_build(inventory: dict[str, object], clean: bool, configuration: 
         "UILaunchScreen": {},
         "UIDeviceFamily": [7],
     }
+    info.update(icon_info)
     with (product / "Info.plist").open("wb") as destination:
         plistlib.dump(info, destination, fmt=plistlib.FMT_BINARY)
     (product / "PkgInfo").write_bytes(b"APPL????")

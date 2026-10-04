@@ -314,15 +314,18 @@ static void joy_queue_event(DIObj *o, uint32_t ofs, uint32_t data) {
     o->buf_tail = (o->buf_tail + 1) % MAX_BUF_EVENTS;
     o->buf_count++;
 }
-/* 00499924 increments 00718FA6 when opening a pausing widget; 00497CF1
- * decrements it on teardown. Include that original counter so in-game pause
- * dialogs use the same navigation as the front-end shell. */
+/* 00718F94 is the original active UI widget root (published by 0049A6C1,
+ * removed by 00497E6D). It owns navigation even when the game keeps running.
+ * The 00718FA6 pause counter alone cannot detect non-pausing multiplayer
+ * menus: creation/teardown gate it on the widget's pause flag (+13 at
+ * 00499907/00497CD8), as well as the game mode and shell state.
+ * Read the root without dereferencing it; HUD rendering uses a separate path. */
 int host_dinput_menu_active(void) {
     /* SwiftUI can query this from the diagnostics panel before enginevision_start
      * has reserved the guest address space.  Never dereference guest VAs in that
      * pre-start state. */
     if (!engine_flat_base) return 0;
-    return G8(0x00718FC9) != 0 || G16(0x00718FA6) != 0;
+    return G8(0x00718FC9) != 0 || G32(0x00718F94) != 0 || G16(0x00718FA6) != 0;
 }
 static bool gamepad_keyboard_mouse_enabled(void) {
     const char *option = getenv("HALO_PAD2KEY");
@@ -330,8 +333,8 @@ static bool gamepad_keyboard_mouse_enabled(void) {
 }
 /* Original 1.10 executable UI-shell lifecycle: 004C8930 sets 00718FC9
  * after selecting levels\\ui\\ui; 004C8B40 clears it on shell teardown.
- * Reading this original state restricts navigation to front-end menus. Never
- * write engine state, and never emit Cross=Enter during campaign gameplay. */
+ * The shell and widget-root state restrict navigation to menus. Never write
+ * engine state, and never emit Cross=Enter during ordinary gameplay. */
 /* DirectInput owns arrow/menu navigation; USER32 also samples Return/Escape
  * for original text dialogs that do not consume the DirectInput key state. */
 void host_dinput_keyboard_state(uint8_t out[256]) {
@@ -339,7 +342,7 @@ void host_dinput_keyboard_state(uint8_t out[256]) {
     HostGCSnapshot pad = {0};
     if (!hostgc_poll(&pad)) return;
     /* Options/Start must also reach cinematic skip and the in-game pause menu.
-     * Cross/Enter and directional menu keys remain restricted to the UI shell. */
+     * Cross/Enter and directional keys remain restricted to active menus. */
     if (pad.buttons[HOSTGC_BTN_MENU]) out[0x01] |= 0x80;
     if (!host_dinput_menu_active()) {
         if (!gamepad_keyboard_mouse_enabled()) return;

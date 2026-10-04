@@ -38,6 +38,7 @@ static void live_neutral(void) {
     if (!live_active) return;
     HostGCSnapshot pad = {.connected=true, .sequence=++live_injection_sequence};
     hostgc_inject_test_snapshot(&pad); live_active=false;
+    host_pointer_set(0,0,0,HOST_POINTER_CANCEL);
 }
 static bool live_number(id value, double low, double high, double *out) {
     if (![value isKindOfClass:[NSNumber class]] || CFGetTypeID((__bridge CFTypeRef)value)==CFBooleanGetTypeID()) return false;
@@ -70,13 +71,18 @@ static NSDictionary *live_read(void) {
     return [json isKindOfClass:[NSDictionary class]] ? json : nil;
 }
 static bool live_parse(NSDictionary *json, HostGCSnapshot *pad, uint64_t *sequence, double *issued, double *ttl) {
-    if(!live_keys(json,@[@"sequence",@"issued_at_ms",@"timeout_ms",@"buttons",@"sticks",@"triggers",@"dpad",@"snapshot"])) return false;
+    if(!live_keys(json,@[@"sequence",@"issued_at_ms",@"timeout_ms",@"buttons",@"sticks",@"triggers",@"dpad",@"snapshot",@"tap"])) return false;
     double seq;
     if(!live_number(json[@"sequence"],1,9007199254740991.0,&seq) || floor(seq)!=seq ||
        !live_number(json[@"issued_at_ms"],1,9007199254740991.0,issued)) return false;
     *sequence=(uint64_t)seq; *ttl=500;
     if(json[@"timeout_ms"] && !live_number(json[@"timeout_ms"],20,2000,ttl)) return false;
     if(json[@"snapshot"] && CFGetTypeID((__bridge CFTypeRef)json[@"snapshot"])!=CFBooleanGetTypeID()) return false;
+    if(json[@"tap"]) {
+        id tap=json[@"tap"]; double value;
+        if(![tap isKindOfClass:[NSArray class]] || [tap count]!=2 ||
+           !live_number(tap[0],0,1,&value) || !live_number(tap[1],0,1,&value)) return false;
+    }
     memset(pad,0,sizeof *pad); pad->connected=true;
     NSArray *names=@[@"A",@"B",@"X",@"Y",@"LSHOULDER",@"RSHOULDER",@"LTRIGGER",@"RTRIGGER",@"LTHUMB",@"RTHUMB",@"MENU",@"OPTIONS",@"HOME"];
     id buttons=json[@"buttons"] ?: @[];
@@ -283,6 +289,9 @@ static void live_poll(double now, double wall_ms) {
         if(age < -250 || age>=ttl) error=@"expired or future command; neutral";
         else {
             pad.sequence=++live_injection_sequence; hostgc_inject_test_snapshot(&pad);
+            // Exercise the same completed-pinch queue as the headset. No
+            // cursor/widget memory writes; the original engine handles clicks.
+            if(json[@"tap"]) host_pointer_set([json[@"tap"][0] floatValue],[json[@"tap"][1] floatValue],1,HOST_POINTER_TAP);
             live_active=true; live_deadline=now+fmin(ttl,ttl-age)/1000.0;
             if([json[@"snapshot"] boolValue]) live_snapshot=json;
             fprintf(stderr,"[live-input] accepted sequence=%llu timeout_ms=%.0f\n",sequence,ttl);
@@ -305,7 +314,9 @@ static uint32_t guest_u32(uint32_t address) { uint32_t v;memcpy(&v,engine_flat_b
 typedef struct {
     uint64_t sequence;
     uint32_t tick, player, unit;
-    bool shell, hasUnit;
+    bool shell, hasUnit, menuActive;
+    uint32_t menuRoot;
+    uint16_t pauseDepth, gameMode;
     float observer[3], forward[3], origin[3], center[3];
     bool hasControls, hasWeapon, hasPlayerGlobals, inputDisabled, padConnected;
     uint8_t inputBlock[2], mouseButtons[8], hardwareInput[40];
@@ -376,6 +387,10 @@ static void capture_guest_pose(uint64_t sequence) {
     if((!atomic_load(&probe_live_control) && !observe_without_live) || !engine_flat_base || !sequence) return;
     ProbeGuestPose p={.sequence=sequence,.player=UINT32_MAX,.unit=UINT32_MAX,.weapon=UINT32_MAX,.weaponSlot=-1,.desiredSlot=-1};
     p.shell=engine_flat_base[0x00718FC9u]!=0;
+    p.menuActive=enginevision_menu_active()!=0;
+    p.menuRoot=guest_u32(0x00718F94u);
+    p.pauseDepth=guest_u16(0x00718FA6u);
+    p.gameMode=guest_u16(0x00719720u);
     memcpy(p.observer,engine_flat_base+0x006AC6D0u,sizeof p.observer);
     memcpy(p.forward,engine_flat_base+0x006AC6F0u,sizeof p.forward);
     uint32_t time=guest_u32(0x006F1D6Cu);
@@ -422,6 +437,8 @@ static NSDictionary *live_guest_pose(void) {
     if(!p.sequence) return nil;
     NSMutableDictionary *result=[@{@"frame_sequence":@(p.sequence),@"tick":@(p.tick),
         @"ui_shell":@(p.shell),@"player_datum":@(p.player),@"unit_datum":@(p.unit),
+        @"menu_active":@(p.menuActive),@"menu_root":@(p.menuRoot),
+        @"pause_depth":@(p.pauseDepth),@"game_mode":@(p.gameMode),
         @"scope":@"Diagnostic observation only; no guest writes"} mutableCopy];
     NSArray *observer=pose_vector(p.observer),*forward=pose_vector(p.forward);
     if(observer)result[@"observer"]=observer;

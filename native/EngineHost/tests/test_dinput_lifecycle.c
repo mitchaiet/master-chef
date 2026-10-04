@@ -115,11 +115,46 @@ static void acquire_retries(void) {
     unsetenv("HALO_PAD2KEY");
     puts("PASS Acquire while the pad is away: every retry refused and counted, one log line per absence");
 }
+static void multiplayer_menu(void) {
+    /* A network game keeps running while its root menu owns local input.
+     * It never increments the campaign pause counter. */
+    S8(0x00718FC9, 0); S16(0x00718FA6, 0); S16(0x00719720, 1);
+    S32(0x00718F94, 0);
+    controller = (HostGCSnapshot){.connected=true, .rt=1.f, .ly=-1.f};
+    controller.buttons[HOSTGC_BTN_A] = true;
+    controller.buttons[HOSTGC_BTN_RSHOULDER] = true;
+    uint8_t keys[256], mouse[8];
+    host_dinput_keyboard_state(keys); host_dinput_mouse_buttons_state(mouse);
+    assert(!host_dinput_menu_active() && keys[0x39] && keys[0x21] && !keys[0x1C] && mouse[0]);
+
+    S32(0x00718F94, 0x70000); /* original UI root, independent of pause depth */
+    assert(host_dinput_menu_active());
+    host_dinput_keyboard_state(keys); host_dinput_mouse_buttons_state(mouse);
+    assert(keys[0x1C] && keys[0xD0] && !keys[0x39] && !keys[0x21] && !mouse[0]);
+    controller.buttons[HOSTGC_BTN_B] = true;
+    host_dinput_keyboard_state(keys); assert(keys[0x01] && !keys[0x1D]);
+    host_mouse_buttons[0] = 0x80; /* preserve an actual pointer click */
+    host_dinput_mouse_buttons_state(mouse); assert(mouse[0] == 0x80);
+    host_mouse_buttons[0] = 0;
+    setenv("HALO_PAD2KEY", "0", 1);
+    HostGCSnapshot joystick;
+    assert(joy_read_gameplay_snapshot(&joystick) && joystick.connected);
+    assert(!joystick.buttons[HOSTGC_BTN_A] && !joystick.ly && !joystick.rt);
+    unsetenv("HALO_PAD2KEY");
+
+    S32(0x00718F94, 0); controller.buttons[HOSTGC_BTN_B] = false;
+    host_dinput_keyboard_state(keys); host_dinput_mouse_buttons_state(mouse);
+    assert(!host_dinput_menu_active() && keys[0x39] && !keys[0x1C] && !keys[0xD0] && mouse[0]);
+    S8(0x00718FC9, 1); assert(host_dinput_menu_active()); S8(0x00718FC9, 0);
+    S16(0x00718FA6, 2); assert(host_dinput_menu_active()); S16(0x00718FA6, 0);
+    S16(0x00719720, 0); controller = (HostGCSnapshot){0};
+    puts("PASS multiplayer root menu owns confirm/back/navigation/clicks; gameplay resumes on close");
+}
 int main(void) {
     /* The app's first diagnostics refresh runs before the engine starts. */
     assert(engine_flat_base == NULL);
     assert(host_dinput_menu_active() == 0);
     engine_flat_base = calloc(1, 8*1024*1024); assert(engine_flat_base);
-    lifecycle(); input_transitions(); acquire_retries(); free(engine_flat_base);
+    lifecycle(); input_transitions(); acquire_retries(); multiplayer_menu(); free(engine_flat_base);
     puts("PASS source-only DirectInput lifecycle; no controller/device acceptance implied");
 }

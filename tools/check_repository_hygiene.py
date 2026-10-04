@@ -12,10 +12,13 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 SKIP = {'.git', '.build', '.setup', '__pycache__', '.venv', 'game', 'build', 'logs', 'dist', 'DerivedData'}
-# Explicitly reviewed generated documentation art, never a general binary
+# Explicitly reviewed documentation and app-icon art, never a general binary
 # allowlist. Changing this image requires reviewing and updating its digest.
 DOCUMENTATION_ART = {
     'docs/assets/master-chef-header.png': 'e15bc1102ca36f40e357c39d48149445f94115971a9469406f7e67c9f442a386',
+    'native/EngineVision/Resources/AppIcons.xcassets/AppIcon.solidimagestack/Back.solidimagestacklayer/Content.imageset/Layer.png': 'ea2d4b050f92279f8c18e62c7e6bc3fa13e05b82864323292301e1b66122bd22',
+    'native/EngineVision/Resources/AppIcons.xcassets/AppIcon.solidimagestack/Front.solidimagestacklayer/Content.imageset/Layer.png': '9f8d723a55da7be12a1aae14643af014f49a752542d72291c8f9a8afede2f5dc',
+    'native/EngineVision/Resources/AppIcons.xcassets/AppIcon.solidimagestack/Middle.solidimagestacklayer/Content.imageset/Layer.png': 'f40aff78268a31fbb6d166ad7dcfdb7c7bc767c1c0a23c61a2078dff461c7f61',
 }
 BAD_SUFFIX = {'.exe', '.dll', '.map', '.iso', '.ipa', '.p12', '.p8', '.pfx', '.pem', '.key',
               '.mobileprovision', '.provisionprofile', '.o', '.a', '.dylib', '.so', '.pyc',

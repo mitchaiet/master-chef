@@ -26,6 +26,8 @@ targets:
         buildPhase: resources
       - path: Resources/PrivacyInfo.xcprivacy
         buildPhase: resources
+      - path: Resources/AppIcons.xcassets
+        buildPhase: resources
       - path: ../../.setup/VisualMods/TextureMods.hvt
         buildPhase: resources
       - path: ../../.setup/VisualMods/ShaderMods.hvs
@@ -89,6 +91,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: org.example.halovision
         PRODUCT_NAME: HaloVision
         PRODUCT_MODULE_NAME: EngineVision
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_FILE: Info.plist
         INFOPLIST_KEY_CFBundleDisplayName: Halo Vision
@@ -99,8 +102,8 @@ targets:
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UIApplicationPreferredDefaultSceneSessionRole: CPSceneSessionRoleImmersiveSpaceApplication
         TARGETED_DEVICE_FAMILY: "7"
-        CURRENT_PROJECT_VERSION: "104"
-        MARKETING_VERSION: "1.0.4"
+        CURRENT_PROJECT_VERSION: "105"
+        MARKETING_VERSION: "1.0.5"
         SWIFT_OBJC_BRIDGING_HEADER: Sources/EngineVision-Bridging-Header.h
         HEADER_SEARCH_PATHS: "$(inherited) $(SRCROOT)/Sources $(SRCROOT)/../../third_party/mojoshader $(SRCROOT)/../EngineHost $(SRCROOT)/../EngineReuse $(SRCROOT)/../build/engine-reuse/whole-exe"
         OTHER_CFLAGS: "$(inherited) -frounding-math -ffp-contract=off -DENGINE_FLAT_MEMORY=1 -DHALO_ARM64_FENV_FAST=1 -DMOJOSHADER_NO_VERSION_INCLUDE=1 -DSUPPORT_PROFILE_D3D=0 -DSUPPORT_PROFILE_BYTECODE=0 -DSUPPORT_PROFILE_HLSL=0 -DSUPPORT_PROFILE_GLSL120=0 -DSUPPORT_PROFILE_GLSLES=0 -DSUPPORT_PROFILE_GLSLES3=0 -DSUPPORT_PROFILE_GLSL=0 -DSUPPORT_PROFILE_ARB1=0 -DSUPPORT_PROFILE_ARB1_NV=0 -DSUPPORT_PROFILE_SPIRV=0 -DSUPPORT_PROFILE_GLSPIRV=0 -frounding-math -ffp-contract=off"

@@ -1,5 +1,43 @@
 # Source-release validation
 
+## Build105 multiplayer menus and app icon
+
+Validated on October 4, 2026, on an Apple Silicon Mac:
+
+- Reproduced the unresponsive Start menu against a local unmodified retail
+  PC 1.10 dedicated server. The original UI root was active while the pause
+  counter stayed zero; the old menu detector returned false and ignored
+  navigation. The same fixture failed before the fix and passed afterward.
+- With the active-root check, the real network game accepted Start, Down,
+  confirm and back, opened the settings screen, resumed through a pointer
+  click and returned to the main menu through Leave Game. Ordinary gameplay
+  had no active root. The probe only supplied normal controller/pointer
+  input and observed engine state; it did not write menu or cursor globals.
+- DirectInput lifecycle and pointer-queue regressions passed normally and
+  under ASan/UBSan. The fixture also verifies that a multiplayer menu blocks
+  gameplay bindings, preserves physical clicks and releases input on close.
+- Restored the three original layered icon images from the earlier app.
+  Both build routes now select AppIcon. XcodeGen placed the catalog in
+  Resources; actool produced Assets.car and primary-icon metadata. The full
+  ARM64 visionOS Release build compiled 60 native units and 24 Swift sources.
+  The private, previously generated and verified PC 1.10 translation was
+  reused. Texture and shader packs remain unchanged.
+- All five repository-art hygiene regressions passed, including exact-path
+  and exact-byte checks for each icon layer.
+- Strict source hygiene passed for all 394 files, including the refreshed
+  source manifest. Private signing and full game-payload verification passed;
+  the payload and both visual packs match the previous installed build.
+- Build105 installed successfully on the Vision Pro; device inventory
+  independently confirmed version 1.0.5/build 105. The device generated a
+  non-placeholder 1024-pixel app icon, which was retrieved and visually
+  checked. Launch verification was blocked by the headset requiring its
+  passcode after installation; no Build105 startup telemetry was obtained.
+
+Physical headset pinch and controller menu acceptance still need a user
+check. The retrieved icon verifies the installed app's icon service output,
+not a full Home View screenshot. No extended or populated-match multiplayer
+qualification is claimed.
+
 ## Build104 multiplayer development
 
 Validated on October 4, 2026, on an Apple Silicon Mac:
@@ -35,8 +73,12 @@ Validated on October 4, 2026, on an Apple Silicon Mac:
 
 These are desktop connection and input smoke tests. The selected public server
 was empty before joining, so combat against another player and replication
-quality were not tested. Headset installation, headset networking, sustained
-multiplayer performance, hosting and extended sessions remain pending. The
+quality were not tested. Build104 was subsequently signed, installed and
+launched on a Vision Pro; device inventory confirmed version 1.0.4/build 104.
+Startup telemetry reached engine frame 3,062 with an active controller/audio
+queue and zero GPU errors. The owner then reported that multiplayer joining
+worked, but Start-menu input failed; Build105 addresses that reproduced bug.
+Sustained multiplayer performance, hosting and extended sessions remain pending. The
 v1.0.3 release files have not been replaced by this development build.
 
 ## Source completeness follow-up

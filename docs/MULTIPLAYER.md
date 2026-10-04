@@ -1,7 +1,8 @@
 # Online multiplayer
 
-**Build104 / 1.0.4 development source** adds public Internet server browsing
-and joining for retail Halo PC 1.10. Build the current source using the
+**Build105 / 1.0.5 development source** supports public Internet server browsing
+and joining for retail Halo PC 1.10, with working multiplayer Start menus.
+Build the current source using the
 [setup guide](SETUP.md) or [manual build guide](BUILDING.md). The published
 v1.0.3 / build 103 download does not contain these networking changes.
 
@@ -29,18 +30,34 @@ Anniversary and Xbox multiplayer are not supported by this port. There is
 no matchmaking account, relay service or automatic router configuration in
 Master Chef.
 
+## In-game menu
+
+Press **Start/Options** to open the menu. Use the D-pad or left stick to
+navigate, **A/Cross** to select and **B/Circle** to go back. Select **Resume
+Game** to return or **Leave Game** to disconnect. Pointer/pinch selection
+uses the same menu route. Multiplayer continues running while the menu is open.
+
+Build105 fixes Build104 treating this non-pausing menu as gameplay, which
+prevented navigation and selection. Update to Build105 if joining works but
+the Start menu ignores your input.
+
 ## Test status
 
 The Mac runtime retrieved 71 public servers and joined an existing public
 Timberland CTF server on October 4, 2026. Movement and firing worked in that
 session. Direct-IP joining also passed against an unmodified local dedicated
-server. The full visionOS Release app compiled.
+server. Build105 also passed Start-menu navigation, opening/backing out of
+settings, pointer-click resume and Leave Game against that local server.
+The full visionOS Release app compiled with its restored layered app icon.
 
-**Vision Pro multiplayer testing is pending.** These desktop smoke tests do
-not establish headset performance, combat with other players, long-session
-stability, or hosting across different networks. LAN broadcast discovery is
+Build104 was installed and startup-verified on a Vision Pro; its owner
+reported successful multiplayer joining and the menu failure addressed in
+Build105. Build105 is installed, and its device-rendered icon was checked.
+**Build105 headset menu acceptance remains pending.** Desktop smoke
+tests do not establish headset performance, combat with other players,
+long-session stability, or hosting across different networks. LAN broadcast discovery is
 also unqualified; the app does not request Apple's multicast entitlement.
-See [validation details](VALIDATION.md#build104-multiplayer-development).
+See [validation details](VALIDATION.md#build105-multiplayer-menus-and-app-icon).
 
 ## Troubleshooting
 
@@ -79,6 +96,12 @@ The Internet menu's obsolete Windows patch lookup is replaced by the
 original game's no-update result. This port requires a hash-verified 1.10
 executable and updates through native app builds. The original browser,
 join protocol, registration and server checks continue to run.
+
+Menu detection reads the original engine's active widget root as well as its
+front-end and pause state. Multiplayer menus can own input without pausing
+simulation. `test_dinput_lifecycle.c` checks that distinction, gameplay input
+restoration, preserved pointer clicks and suppression of gameplay joystick
+actions while a menu is active.
 
 `test_winsock.c` exercises the guest ABI against real native loopback peers.
 `test_multiplayer_update.c` checks the native return and, when generated
