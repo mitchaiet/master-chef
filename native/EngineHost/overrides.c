@@ -5,6 +5,7 @@
 #include "halo_settings.h"
 #include "campaign_unlock.h"
 #include "engine_hooks.h"
+#include "multiplayer_update.h"
 
 #include <math.h>
 #include <string.h>
@@ -202,6 +203,7 @@ static int ov_native_gather(EngineCPU *cpu, uint32_t address) {
     return taken;
 }
 static Override overrides[] = {
+    { 0x00577240u, host_multiplayer_update_poll, "native app update policy" },
     { 0x00626BA4u, ov_mbstowcs, "_mbstowcs" },
     { 0xFFFFFFFFu, ov_wcstombs, "_wcstombs (absent in this build)" },
     { 0x00631930u, ov_mbtowc,   "_mbtowc" },

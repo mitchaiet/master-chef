@@ -3,7 +3,7 @@
 from pathlib import Path
 import tempfile
 import unittest
-from check_repository_hygiene import ROOT, audit
+from check_repository_hygiene import ROOT, DOCUMENTATION_ART, audit
 
 
 class ArtworkHygieneTests(unittest.TestCase):
@@ -30,6 +30,24 @@ class ArtworkHygieneTests(unittest.TestCase):
     def test_text_cannot_hide_under_image_name(self):
         self.path.write_text('unreviewed private input')
         self.assertEqual(audit(self.root, strict=True)[1][0][2], 'unreviewed-documentation-art')
+
+    def test_layered_icons_require_exact_paths_and_bytes(self):
+        for relative in DOCUMENTATION_ART:
+            if not relative.startswith('native/'):
+                continue
+            with self.subTest(path=relative):
+                icon = self.root / relative
+                icon.parent.mkdir(parents=True, exist_ok=True)
+                content = (ROOT / relative).read_bytes()
+                icon.write_bytes(content)
+                self.assertEqual(audit(self.root, strict=True)[1], [])
+                icon.write_bytes(content + b'changed')
+                self.assertEqual(audit(self.root, strict=True)[1][0][2], 'unreviewed-documentation-art')
+                icon.unlink()
+                unexpected = icon.with_name('Unreviewed.png')
+                unexpected.write_bytes(content)
+                self.assertEqual(audit(self.root, strict=True)[1][0][2], 'binary-file')
+                unexpected.unlink()
 
 
 if __name__ == '__main__':

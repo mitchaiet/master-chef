@@ -1,5 +1,86 @@
 # Source-release validation
 
+## Build105 multiplayer menus and app icon
+
+Validated on October 4, 2026, on an Apple Silicon Mac:
+
+- Reproduced the unresponsive Start menu against a local unmodified retail
+  PC 1.10 dedicated server. The original UI root was active while the pause
+  counter stayed zero; the old menu detector returned false and ignored
+  navigation. The same fixture failed before the fix and passed afterward.
+- With the active-root check, the real network game accepted Start, Down,
+  confirm and back, opened the settings screen, resumed through a pointer
+  click and returned to the main menu through Leave Game. Ordinary gameplay
+  had no active root. The probe only supplied normal controller/pointer
+  input and observed engine state; it did not write menu or cursor globals.
+- DirectInput lifecycle and pointer-queue regressions passed normally and
+  under ASan/UBSan. The fixture also verifies that a multiplayer menu blocks
+  gameplay bindings, preserves physical clicks and releases input on close.
+- Restored the three original layered icon images from the earlier app.
+  Both build routes now select AppIcon. XcodeGen placed the catalog in
+  Resources; actool produced Assets.car and primary-icon metadata. The full
+  ARM64 visionOS Release build compiled 60 native units and 24 Swift sources.
+  The private, previously generated and verified PC 1.10 translation was
+  reused. Texture and shader packs remain unchanged.
+- All five repository-art hygiene regressions passed, including exact-path
+  and exact-byte checks for each icon layer.
+- Strict source hygiene passed for all 394 files, including the refreshed
+  source manifest. Private signing and full game-payload verification passed;
+  the payload and both visual packs match the previous installed build.
+- Build105 installed successfully on the Vision Pro; device inventory
+  independently confirmed version 1.0.5/build 105. The device generated a
+  non-placeholder 1024-pixel app icon, which was retrieved and visually
+  checked. Launch verification was blocked by the headset requiring its
+  passcode after installation; no Build105 startup telemetry was obtained.
+
+Physical headset pinch and controller menu acceptance still need a user
+check. The retrieved icon verifies the installed app's icon service output,
+not a full Home View screenshot. No extended or populated-match multiplayer
+qualification is claimed.
+
+## Build104 multiplayer development
+
+Validated on October 4, 2026, on an Apple Silicon Mac:
+
+- The guest Winsock bridge passed native UDP/TCP peer tests, both DLL ordinal
+  layouts, DNS structure translation, socket errors, nonblocking connect and
+  select, datagram truncation, timeouts, stale handles, concurrent close,
+  cleanup and thread cancellation. Focused ASan/UBSan checks also passed.
+- The native app update policy matched all guest memory written by the
+  original Halo PC 1.10 no-update callback. Dispatch and direct-call hook
+  checks passed. Registration and server compatibility checks remain intact.
+- A local unmodified retail PC 1.10 dedicated server accepted a direct-IP
+  connection and reported one player on Blood Gulch. The client rendered
+  700 frames. Distinct client/server UDP ports were used on the same Mac.
+- The original Internet browser retrieved 71 servers and reported 21 players
+  online. A public Timberland CTF server accepted a join. Controller input
+  moved the player's origin approximately 4.2 game units; firing reduced the
+  loaded magazine from four rounds to three. The session advanced more than
+  9,500 game ticks between the initial and final gameplay snapshots.
+- The desktop host, input probe and full ARM64 visionOS Release app compiled.
+  The visionOS build compiled 60 C/Objective-C units and 24 Swift sources,
+  using an existing private translation of the verified 1.10 executable.
+  This was not a fresh engine-generation test. The existing visual packs
+  matched the published checksums.
+- The portable source suite passed from a source-only snapshot (34 C targets
+  plus Python/runtime checks; optional engine comparisons skipped). The new
+  update-policy comparison also passed with the private generated callback.
+  Source hygiene passed. A broader run with that existing translation hit
+  `panorama_interface_record`'s unexpected dispatch at `00511DF0`; unchanged
+  public main reproduces the same failure. The separate legacy desktop-video
+  fixture also fails on unchanged main because its expected display dimensions
+  predate the runtime's current values. Neither fixture was changed here.
+
+These are desktop connection and input smoke tests. The selected public server
+was empty before joining, so combat against another player and replication
+quality were not tested. Build104 was subsequently signed, installed and
+launched on a Vision Pro; device inventory confirmed version 1.0.4/build 104.
+Startup telemetry reached engine frame 3,062 with an active controller/audio
+queue and zero GPU errors. The owner then reported that multiplayer joining
+worked, but Start-menu input failed; Build105 addresses that reproduced bug.
+Sustained multiplayer performance, hosting and extended sessions remain pending. The
+v1.0.3 release files have not been replaced by this development build.
+
 ## Source completeness follow-up
 
 The comparison with the development tree covered 271 public native files.

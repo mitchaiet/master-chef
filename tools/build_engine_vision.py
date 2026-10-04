@@ -66,6 +66,26 @@ def run_stream(command: list[str], log_path: Path, cwd: Path) -> int:
         return process.wait()
 
 
+def compile_app_icon(product: Path) -> dict[str, object]:
+    """Compile the visionOS layered icon and return actool's bundle metadata."""
+    partial = product.parent / "app-icon-info.plist"
+    partial.unlink(missing_ok=True)
+    # A stale catalog must not make an incomplete compile appear successful.
+    (product / "Assets.car").unlink(missing_ok=True)
+    subprocess.run([
+        "xcrun", "actool", str(APP / "Resources/AppIcons.xcassets"),
+        "--compile", str(product), "--platform", "xros",
+        "--minimum-deployment-target", "26.0", "--target-device", "vision",
+        "--app-icon", "AppIcon", "--output-partial-info-plist", str(partial),
+        "--warnings", "--errors",
+    ], check=True)
+    with partial.open("rb") as source:
+        info = plistlib.load(source)
+    if not (product / "Assets.car").is_file() or not info.get("CFBundleIcons", {}).get("CFBundlePrimaryIcon"):
+        raise RuntimeError("App icon compilation did not produce a catalog and primary-icon metadata")
+    return info
+
+
 def direct_xros_build(inventory: dict[str, object], clean: bool, configuration: str) -> tuple[int, Path | None]:
     """Build an unsigned device bundle without Xcode's separately installed platform runtime."""
     if clean:
@@ -74,6 +94,7 @@ def direct_xros_build(inventory: dict[str, object], clean: bool, configuration: 
     product = DIRECT / "HaloVision.app"
     objects.mkdir(parents=True, exist_ok=True)
     product.mkdir(parents=True, exist_ok=True)
+    icon_info = compile_app_icon(product)
     sdk = subprocess.check_output(["xcrun", "--sdk", "xros", "--show-sdk-path"], text=True).strip()
     target = "arm64-apple-xros26.0"
     includes = [
@@ -86,7 +107,7 @@ def direct_xros_build(inventory: dict[str, object], clean: bool, configuration: 
               "-frounding-math", "-ffp-contract=off", "-DMOJOSHADER_NO_VERSION_INCLUDE=1", '-DSUPPORT_PROFILE_D3D=0', '-DSUPPORT_PROFILE_BYTECODE=0', '-DSUPPORT_PROFILE_HLSL=0', '-DSUPPORT_PROFILE_GLSL120=0', '-DSUPPORT_PROFILE_GLSLES=0', '-DSUPPORT_PROFILE_GLSLES3=0', '-DSUPPORT_PROFILE_GLSL=0', '-DSUPPORT_PROFILE_ARB1=0', '-DSUPPORT_PROFILE_ARB1_NV=0', '-DSUPPORT_PROFILE_SPIRV=0', '-DSUPPORT_PROFILE_GLSPIRV=0', "-I", str(REPO / "third_party/mojoshader"), "-O2" if configuration == "Release" else "-O0", *includes]
     host = REPO / "native" / "EngineHost"
     c_sources = [host / name for name in (
-        "host.c", "shims_kernel32.c", "shims_misc.c", "directsound.c", "directsound_mixer.c", "vorbis_shim.c", "d3d9.c", "texture_decode.c", "metalshader.c", "dinput8.c",
+        "host.c", "shims_kernel32.c", "shims_misc.c", "winsock.c", "directsound.c", "directsound_mixer.c", "vorbis_shim.c", "d3d9.c", "texture_decode.c", "metalshader.c", "dinput8.c",
         "ddraw.c", "resources.c", "overrides.c", "threading.c", "pointer.c", "haptics.c", "halo_settings.c",
     )]
     c_sources += [REPO / "third_party/mojoshader/mojoshader.c", REPO / "third_party/mojoshader/mojoshader_common.c", REPO / "third_party/mojoshader/profiles/mojoshader_profile_common.c", REPO / "third_party/mojoshader/profiles/mojoshader_profile_metal.c"]
@@ -181,15 +202,16 @@ def direct_xros_build(inventory: dict[str, object], clean: bool, configuration: 
         "CFBundleInfoDictionaryVersion": "6.0",
         "CFBundleName": "HaloVision",
         "CFBundlePackageType": "APPL",
-        "CFBundleShortVersionString": "1.0.3",
+        "CFBundleShortVersionString": "1.0.5",
         "CFBundleSupportedPlatforms": ["XROS"],
-        "CFBundleVersion": "103",
+        "CFBundleVersion": "105",
         "HaloBuildID": dt.datetime.now(dt.timezone.utc).isoformat(),
         "DTPlatformName": "xros",
         "GCSupportsControllerUserInteraction": True,
         "GCSupportedGameControllers": [{"ProfileName": "ExtendedGamepad"}],
         "GCRequiresControllerUserInteraction": {"visionOS": True},
         "MinimumOSVersion": "26.0",
+        "NSLocalNetworkUsageDescription": "Connect to Halo multiplayer servers and players on your local network.",
         "NSHandsTrackingUsageDescription": "A pinch selects the menu item you are looking at.",
         "NSWorldSensingUsageDescription": "Head tracking keeps the curved original-engine screen aligned with your chosen reclined pose; aiming remains on the controller.",
         "UIApplicationPreferredDefaultSceneSessionRole": "CPSceneSessionRoleImmersiveSpaceApplication",
@@ -203,6 +225,7 @@ def direct_xros_build(inventory: dict[str, object], clean: bool, configuration: 
         "UILaunchScreen": {},
         "UIDeviceFamily": [7],
     }
+    info.update(icon_info)
     with (product / "Info.plist").open("wb") as destination:
         plistlib.dump(info, destination, fmt=plistlib.FMT_BINARY)
     (product / "PkgInfo").write_bytes(b"APPL????")

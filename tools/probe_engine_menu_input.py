@@ -19,7 +19,7 @@ def run(cmd):subprocess.run(list(map(str,cmd)),check=True)
 objs=engine_dir/'host-obj'
 # Ignore obsolete cached chunks, which do not belong to the current generation.
 parts=[objs/(f.stem+'.o')for f in sorted(objs.parent.glob('chunk_*.c'))]
-parts += [objs/(name+'.o')for name in ['engine_bundle','engine_imports','host','threading','haptics','halo_settings','pointer','shims_kernel32','shims_misc','directsound','directsound_mixer','vorbis_shim','d3d9','ddraw','dinput8','gamecontroller','metalrenderer','metalshader','texture_decode','overrides','resources','mojoshader','mojoshader_common','mojoshader_profile_common','mojoshader_profile_metal']]
+parts += [objs/(name+'.o')for name in ['engine_bundle','engine_imports','host','threading','haptics','halo_settings','pointer','shims_kernel32','shims_misc','winsock','directsound','directsound_mixer','vorbis_shim','d3d9','ddraw','dinput8','gamecontroller','metalrenderer','metalshader','texture_decode','overrides','resources','mojoshader','mojoshader_common','mojoshader_profile_common','mojoshader_profile_metal']]
 hostdir=ROOT/'native/EngineHost'
 if a.build:
     run(['make','-C',hostdir,'-j2',f'GEN={engine_dir}','halo-host'])

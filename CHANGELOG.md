@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.0.5 / Build105 development
+
+- Restores the layered app icon in both direct and Xcode builds, including
+  the compiled asset catalog and primary-icon bundle metadata.
+- Fixes controller and pointer input after opening Start during multiplayer.
+  The active menu root now owns input even when the game does not pause.
+- Verifies navigation, settings, pointer resume and Leave Game against a
+  local retail PC 1.10 dedicated server. Adds a reproduced input regression
+  and exact-byte checks for the restored icon layers.
+
+## 1.0.4 / Build104 development
+
+- Adds native IPv4 Winsock compatibility for public Internet server browsing
+  and joining, and replaces the obsolete Windows updater check with the
+  original game's no-update result for the required PC 1.10 executable.
+- Verifies desktop public-server browsing, joining, movement and firing.
+  Headset installation and startup passed; successful headset joining was
+  subsequently user-reported. See [validation](docs/VALIDATION.md).
+
+These development changes are not included in the v1.0.3 downloads.
+
 ## 1.0.3
 
 - Publishes the full visual selection used by Build91: 1,068 texture and 13

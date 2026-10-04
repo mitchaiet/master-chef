@@ -19,6 +19,9 @@ trademarks, third-party mod artwork or shader source.
   [Sledmine/censhine](https://github.com/Sledmine/censhine/tree/1.0.0).
 - **Generated repository header**: provenance and exact edit prompt are in
   [docs/assets/README.md](assets/README.md).
+- **Layered app icon**: restored from the earlier development app's three
+  ringworld image layers. These depict Halo game artwork and retain its
+  existing rights; they are not covered by the MIT source-code license.
 
 The visual-pack hashes and entry counts are in
 [`mods/visual-assets.json`](../mods/visual-assets.json). Build91 and this

@@ -46,7 +46,7 @@ def main():
     run([sys.executable, ROOT / 'tools/test_engine_vision_report_summary.py'])
     run([sys.executable, ROOT / 'tools/test_watch_engine_vision_telemetry.py'])
     run([sys.executable, HOST / 'tests/test_dispatch_interest.py'])
-    cases = [(name, []) for name in ('frame_pacer', 'panorama_budget', 'pointer_step', 'pointer_input', 'panorama_epoch', 'panorama_gpu_carry', 'panorama_lifecycle', 'panorama_pose_export', 'panorama_camera_cut', 'panorama_motion_budget', 'texture_mips', 'dinput_lifecycle', 'x87_nearest_fast_path', 'engine_direct_calls', 'controller_link_guard')]
+    cases = [(name, []) for name in ('frame_pacer', 'panorama_budget', 'pointer_step', 'pointer_input', 'panorama_epoch', 'panorama_gpu_carry', 'panorama_lifecycle', 'panorama_pose_export', 'panorama_camera_cut', 'panorama_motion_budget', 'texture_mips', 'dinput_lifecycle', 'winsock', 'multiplayer_update', 'x87_nearest_fast_path', 'engine_direct_calls', 'controller_link_guard')]
     for name in ('panorama_reentry', 'panorama_projection_hook', 'panorama_letterbox_boundary', 'panorama_lod', 'panorama_interface_record', 'halo_settings_layer_align'):
         cases.append((name, [HOST / 'halo_settings.c']))
     for fast in (0, 1):
@@ -95,6 +95,7 @@ def main():
             flags = ['-O1', '-g', '-fsanitize=address,undefined', '-fno-omit-frame-pointer'] if args.sanitize else ['-O2']
             command = [os.environ.get('CC', 'clang'), *flags, '-pthread', '-DENGINE_FLAT_MEMORY=1', '-I', HOST,
                        '-I', ROOT / 'native/EngineReuse', HOST / 'tests' / f'test_{name}.c', *extra, '-lm']
+            if name == 'multiplayer_update' and generated: command += ['-I', generated]
             if name == 'radial_fog':
                 command += ['-w', '-frounding-math', '-ffp-contract=off', *mojo_flags]
                 # Optional read-only evidence from the local translated engine.
